@@ -4,7 +4,7 @@ import { RoomListingData } from './drivers/Driver';
 const LOBBY_CHANNEL = '$lobby';
 
 export function notifyLobby(room: RoomListingData, removed: boolean = false) {
-  if (!room.unlisted) {
+  if (!room.unlisted && !room.private) {
     matchMaker.presence.publish(LOBBY_CHANNEL, `${room.roomId},${removed ? 1 : 0}`);
   }
 }

@@ -68,7 +68,7 @@ export class LobbyRoom extends Room { // tslint:disable-line
           if (hadData && !hasData) {
             this.send(client, [roomId, null]);
 
-          } else {
+          } else if (hasData) {
             this.send(client, [roomId, data]);
           }
         });

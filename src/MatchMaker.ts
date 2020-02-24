@@ -440,8 +440,10 @@ function onClientJoinRoom(room: Room, client: Client) {
   handlers[room.roomName].emit('join', room, client);
 }
 
-function onClientLeaveRoom(room: Room, client: Client) {
-  notifyLobby(room.listing);
+function onClientLeaveRoom(room: Room, client: Client, willDispose: boolean) {
+  if (!willDispose) {
+    notifyLobby(room.listing);
+  }
   handlers[room.roomName].emit('leave', room, client);
 }
 

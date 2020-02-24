@@ -581,27 +581,22 @@ export abstract class Room<State= any, Metadata= any> extends EventEmitter {
   private async _onLeave(client: Client, code?: number): Promise<any> {
     const success = spliceOne(this.clients, this.clients.indexOf(client));
 
-    // call abstract 'onLeave' method only if the client has been successfully accepted.
-    if (success) {
-      if (this.onLeave) {
-        try {
-          await this.onLeave(client, (code === Protocol.WS_CLOSE_CONSENTED));
+    // call 'onLeave' method only if the client has been successfully accepted.
+    if (success && this.onLeave) {
+      try {
+        await this.onLeave(client, (code === Protocol.WS_CLOSE_CONSENTED));
 
-        } catch (e) {
-          debugAndPrintError(`onLeave error: ${(e && e.message || e || 'promise rejected')}`);
-        }
-      }
-
-      if (client.state !== ClientState.RECONNECTED) {
-        this.emit('leave', client);
+      } catch (e) {
+        debugAndPrintError(`onLeave error: ${(e && e.message || e || 'promise rejected')}`);
       }
     }
 
-    // skip next checks if client has reconnected successfully (through `allowReconnection()`)
-    if (client.state === ClientState.RECONNECTED) { return; }
+    if (client.state !== ClientState.RECONNECTED) {
+      // try to dispose immediatelly if client reconnection isn't set up.
+      const willDispose = await this._decrementClientCount();
 
-    // try to dispose immediatelly if client reconnection isn't set up.
-    await this._decrementClientCount();
+      this.emit('leave', client, willDispose);
+    }
   }
 
   private async _incrementClientCount() {
@@ -637,6 +632,8 @@ export abstract class Room<State= any, Metadata= any> extends EventEmitter {
         $set: { locked: this._locked },
       });
     }
+
+    return willDispose;
   }
 
 }
