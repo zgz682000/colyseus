@@ -165,7 +165,7 @@ export abstract class Room<State= any, Metadata= any> extends EventEmitter {
     this.state = newState;
   }
 
-  public setMetadata(meta: Partial<Metadata>) {
+  public async setMetadata(meta: Partial<Metadata>) {
     if (!this.listing.metadata) {
       this.listing.metadata = meta as Metadata;
 
@@ -174,11 +174,15 @@ export abstract class Room<State= any, Metadata= any> extends EventEmitter {
         if (!meta.hasOwnProperty(field)) { continue; }
         this.listing.metadata[field] = meta[field];
       }
+
+      // `MongooseDriver` workaround: persit metadata mutations
+      if ('markModified' in this.listing) {
+        (this.listing as any).markModified('metadata');
+      }
     }
 
     if (this._internalState === RoomInternalState.CREATED) {
-      this.listing.save();
-      this.emit('metadata');
+      await this.listing.save();
     }
   }
 
@@ -187,7 +191,6 @@ export abstract class Room<State= any, Metadata= any> extends EventEmitter {
 
     if (this._internalState === RoomInternalState.CREATED) {
       await this.listing.save();
-      this.emit('metadata');
     }
   }
 

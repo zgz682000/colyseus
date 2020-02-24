@@ -1,6 +1,4 @@
 import mongoose, { Document, Schema } from 'mongoose';
-
-import { notifyLobby } from '../Lobby';
 import { MatchMakerDriver, QueryHelpers, RoomListingData } from './Driver';
 
 const RoomCacheSchema: Schema = new Schema<Document>({
