@@ -1,4 +1,6 @@
 import mongoose, { Document, Schema } from 'mongoose';
+
+import { notifyLobby } from '../Lobby';
 import { MatchMakerDriver, QueryHelpers, RoomListingData } from './Driver';
 
 const RoomCacheSchema: Schema = new Schema<Document>({
@@ -10,6 +12,7 @@ const RoomCacheSchema: Schema = new Schema<Document>({
   private: { type: Boolean, default: false },
   processId: String,
   roomId: String,
+  unlisted: { type: Boolean, default: false }, // used for default LobbyRoom (prevent from showing up on room listing)
 }, {
   strict: false,
   timestamps: true,

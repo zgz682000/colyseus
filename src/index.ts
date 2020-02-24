@@ -15,9 +15,6 @@ export { Presence } from './presence/Presence';
 export { LocalPresence } from './presence/LocalPresence';
 export { RedisPresence } from './presence/RedisPresence';
 
-// Default rooms
-export { RelayRoom } from './rooms/RelayRoom';
-
 // Serializers
 export { FossilDeltaSerializer } from './serializer/FossilDeltaSerializer';
 export { SchemaSerializer } from './serializer/SchemaSerializer';
@@ -26,3 +23,7 @@ export { SchemaSerializer } from './serializer/SchemaSerializer';
 export { Clock, Delayed };
 export { nonenumerable as nosync } from 'nonenumerable';
 export { generateId } from './Utils';
+
+// Default rooms
+export { LobbyRoom } from './rooms/LobbyRoom';
+export { RelayRoom } from './rooms/RelayRoom';

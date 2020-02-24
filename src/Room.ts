@@ -200,13 +200,13 @@ export abstract class Room<State= any, Metadata= any> extends EventEmitter {
     // skip if already locked.
     if (this._locked) { return; }
 
-    this.emit('lock');
-
     this._locked = true;
 
-    return await this.listing.updateOne({
+    await this.listing.updateOne({
       $set: { locked: this._locked },
     });
+
+    this.emit('lock');
   }
 
   public async unlock() {
@@ -218,13 +218,13 @@ export abstract class Room<State= any, Metadata= any> extends EventEmitter {
     // skip if already locked
     if (!this._locked) { return; }
 
-    this.emit('unlock');
-
     this._locked = false;
 
-    return await this.listing.updateOne({
+    await this.listing.updateOne({
       $set: { locked: this._locked },
     });
+
+    this.emit('unlock');
   }
 
   public send(client: Client, message: any): void {
@@ -284,8 +284,10 @@ export abstract class Room<State= any, Metadata= any> extends EventEmitter {
     return true;
   }
 
-  public disconnect(): Promise<any> {
+  public async disconnect(): Promise<any> {
     this._internalState = RoomInternalState.DISCONNECTING;
+    await this.listing.remove();
+
     this.autoDispose = true;
 
     const delayedDisconnection = new Promise((resolve) =>
@@ -297,10 +299,7 @@ export abstract class Room<State= any, Metadata= any> extends EventEmitter {
 
     let numClients = this.clients.length;
     if (numClients > 0) {
-      // prevent new clients to join while this room is disconnecting.
-      this.lock();
-
-      // clients may have `async onLeave`, room will be disposed after they all run
+      // clients may have `async onLeave`, room will be disposed after they're fulfilled
       while (numClients--) {
         this._forciblyCloseClient(this.clients[numClients], Protocol.WS_CLOSE_CONSENTED);
       }
@@ -309,7 +308,7 @@ export abstract class Room<State= any, Metadata= any> extends EventEmitter {
       this.emit('dispose');
     }
 
-    return delayedDisconnection;
+    return await delayedDisconnection;
   }
 
   public async ['_onJoin'](client: Client, req?: http.IncomingMessage) {
@@ -620,6 +619,10 @@ export abstract class Room<State= any, Metadata= any> extends EventEmitter {
 
   private async _decrementClientCount() {
     const willDispose = this._disposeIfEmpty();
+
+    if (this._internalState === RoomInternalState.DISCONNECTING) {
+      return;
+    }
 
     // unlock if room is available for new connections
     if (!willDispose) {
