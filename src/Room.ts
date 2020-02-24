@@ -178,6 +178,7 @@ export abstract class Room<State= any, Metadata= any> extends EventEmitter {
 
     if (this._internalState === RoomInternalState.CREATED) {
       this.listing.save();
+      this.emit('metadata');
     }
   }
 
@@ -185,7 +186,8 @@ export abstract class Room<State= any, Metadata= any> extends EventEmitter {
     this.listing.private = bool;
 
     if (this._internalState === RoomInternalState.CREATED) {
-      return await this.listing.save();
+      await this.listing.save();
+      this.emit('metadata');
     }
   }
 

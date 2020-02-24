@@ -291,6 +291,7 @@ async function handleCreateRoom(roomName: string, clientOptions: ClientOptions):
   room.on('unlock', unlockRoom.bind(this, room));
   room.on('join', onClientJoinRoom.bind(this, room));
   room.on('leave', onClientLeaveRoom.bind(this, room));
+  room.on('metadata', onMetadataChange.bind(this, room));
   room.once('dispose', disposeRoom.bind(this, roomName, room));
   room.once('disconnect', () => room.removeAllListeners());
 
@@ -445,6 +446,10 @@ function onClientLeaveRoom(room: Room, client: Client, willDispose: boolean) {
     notifyLobby(room.listing);
   }
   handlers[room.roomName].emit('leave', room, client);
+}
+
+function onMetadataChange(room: Room) {
+  notifyLobby(room.listing);
 }
 
 function lockRoom(room: Room): void {
