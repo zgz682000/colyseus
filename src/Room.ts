@@ -381,38 +381,7 @@ export abstract class Room<State= any, Metadata= any> extends EventEmitter {
     );
   }
 
-  protected sendState(client: Client): void {
-    send[Protocol.ROOM_STATE](client, this._serializer.getFullState(client));
-  }
-
-  protected broadcastPatch(): boolean {
-    if (!this._simulationInterval) {
-      this.clock.tick();
-    }
-
-    if (!this.state) {
-      debugPatch('trying to broadcast null state. you should call #setState');
-      return false;
-    }
-
-    return this._serializer.applyPatches(this.clients, this.state);
-  }
-
-  protected broadcastAfterPatch() {
-    const length = this._afterNextPatchBroadcasts.length;
-
-    if (length > 0) {
-      for (let i = 0; i < length; i++) {
-        this.broadcast.apply(this, this._afterNextPatchBroadcasts[i]);
-      }
-
-      // new messages may have been added in the meantime,
-      // let's splice the ones that have been processed
-      this._afterNextPatchBroadcasts.splice(0, length);
-    }
-  }
-
-  protected allowReconnection(client: Client, seconds: number = Infinity): Deferred {
+  public allowReconnection(client: Client, seconds: number = Infinity): Deferred {
     if (this._internalState === RoomInternalState.DISCONNECTING) {
       this._disposeIfEmpty(); // gracefully shutting down
       throw new Error('disconnecting');
@@ -449,6 +418,37 @@ export abstract class Room<State= any, Metadata= any> extends EventEmitter {
       });
 
     return reconnection;
+  }
+
+  protected sendState(client: Client): void {
+    send[Protocol.ROOM_STATE](client, this._serializer.getFullState(client));
+  }
+
+  protected broadcastPatch(): boolean {
+    if (!this._simulationInterval) {
+      this.clock.tick();
+    }
+
+    if (!this.state) {
+      debugPatch('trying to broadcast null state. you should call #setState');
+      return false;
+    }
+
+    return this._serializer.applyPatches(this.clients, this.state);
+  }
+
+  protected broadcastAfterPatch() {
+    const length = this._afterNextPatchBroadcasts.length;
+
+    if (length > 0) {
+      for (let i = 0; i < length; i++) {
+        this.broadcast.apply(this, this._afterNextPatchBroadcasts[i]);
+      }
+
+      // new messages may have been added in the meantime,
+      // let's splice the ones that have been processed
+      this._afterNextPatchBroadcasts.splice(0, length);
+    }
   }
 
   protected async _reserveSeat(
