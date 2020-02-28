@@ -22,7 +22,7 @@ export { SchemaSerializer } from './serializer/SchemaSerializer';
 // Utilities
 export { Clock, Delayed };
 export { nonenumerable as nosync } from 'nonenumerable';
-export { generateId } from './Utils';
+export { generateId, Deferred } from './Utils';
 
 // Default rooms
 export { LobbyRoom } from './rooms/LobbyRoom';
