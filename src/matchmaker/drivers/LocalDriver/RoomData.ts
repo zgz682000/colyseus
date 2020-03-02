@@ -1,5 +1,4 @@
 import { spliceOne } from '../../../Utils';
-import { notifyLobby } from '../../Lobby';
 import { RoomListingData } from '../Driver';
 
 export class RoomCache implements RoomListingData {

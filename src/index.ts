@@ -9,6 +9,7 @@ export { RegisteredHandler, SortOptions } from './matchmaker/RegisteredHandler';
 // MatchMaker
 import * as matchMaker from './MatchMaker';
 export { matchMaker };
+export { updateLobby, subscribeLobby } from './MatchMaker/Lobby';
 
 // Presence
 export { Presence } from './presence/Presence';

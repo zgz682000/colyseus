@@ -1,11 +1,15 @@
 import * as matchMaker from '../MatchMaker';
+
 import { RoomListingData } from './drivers/Driver';
+import { Room } from '../Room';
 
 const LOBBY_CHANNEL = '$lobby';
 
-export function notifyLobby(room: RoomListingData, removed: boolean = false) {
-  if (!room.unlisted && !room.private) {
-    matchMaker.presence.publish(LOBBY_CHANNEL, `${room.roomId},${removed ? 1 : 0}`);
+export function updateLobby(room: Room, removed: boolean = false) {
+  const listing = room.listing;
+
+  if (!listing.unlisted && !listing.private) {
+    matchMaker.presence.publish(LOBBY_CHANNEL, `${listing.roomId},${removed ? 1 : 0}`);
   }
 }
 
