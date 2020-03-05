@@ -1,17 +1,18 @@
-import ip from 'internal-ip';
+import net from 'net';
 import { Presence } from '../presence/Presence';
 
 const NODES_SET = 'colyseus:nodes';
 const DISCOVERY_CHANNEL = 'colyseus:nodes:discovery';
 
+
 export interface Node {
-    port: number;
-    processId: string;
+  processId: string;
+  addressInfo: net.AddressInfo;
 }
 
-async function getNodeAddress(node: Node) {
-  const ipv4 = await ip.v4();
-  return `${node.processId}/${ipv4}:${node.port}`;
+function getNodeAddress(node: Node) {
+  const address = (node.addressInfo.address === '::') ? `[${node.addressInfo.address}]` : node.addressInfo.address;
+  return `${node.processId}/${address}:${node.addressInfo.port}`;
 }
 
 export async function registerNode(presence: Presence, node: Node) {
@@ -25,3 +26,4 @@ export async function unregisterNode(presence: Presence, node: Node) {
   await presence.srem(NODES_SET, nodeAddress);
   await presence.publish(DISCOVERY_CHANNEL, `remove,${nodeAddress}`);
 }
+

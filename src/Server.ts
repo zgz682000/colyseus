@@ -108,7 +108,7 @@ export class Server {
   public registerProcessForDiscovery() {
     // register node for proxy/service discovery
     registerNode(this.presence, {
-      port: this.transport.address().port,
+      addressInfo: this.transport.address() as net.AddressInfo
       processId: this.processId,
     });
   }
@@ -119,7 +119,7 @@ export class Server {
 
   public async gracefullyShutdown(exit: boolean = true, err?: Error) {
     await unregisterNode(this.presence, {
-      port: this.transport.address().port,
+      addressInfo: this.transport.address() as net.AddressInfo,
       processId: this.processId,
     });
 
