@@ -108,7 +108,7 @@ export class Server {
   public registerProcessForDiscovery() {
     // register node for proxy/service discovery
     registerNode(this.presence, {
-      addressInfo: this.transport.address() as net.AddressInfo
+      addressInfo: this.transport.address() as net.AddressInfo,
       processId: this.processId,
     });
   }
