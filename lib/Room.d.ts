@@ -75,7 +75,7 @@ export declare abstract class Room<State = any, Metadata = any> extends EventEmi
     protected sendState(client: Client): void;
     protected broadcastPatch(): boolean;
     protected broadcastAfterPatch(): void;
-    protected allowReconnection(client: Client, seconds?: number): Deferred;
+    protected allowReconnection(previousClient: Client, seconds?: number): Deferred;
     protected _reserveSeat(sessionId: string, joinOptions?: any, seconds?: number, allowReconnection?: boolean): Promise<boolean>;
     protected resetAutoDisposeTimeout(timeoutInSeconds: number): void;
     protected _disposeIfEmpty(): boolean;
