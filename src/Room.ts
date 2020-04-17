@@ -355,9 +355,7 @@ export abstract class Room<State= any, Metadata= any> extends EventEmitter {
         }
       } catch (e) {
         spliceOne(this.clients, this.clients.indexOf(client));
-        debugAndPrintError(e);
         throw e;
-
       } finally {
         // remove seat reservation
         delete this.reservedSeats[sessionId];
